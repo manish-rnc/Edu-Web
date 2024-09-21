@@ -8,7 +8,7 @@ const register = async (req, res) => {
         const learner = await Learner.findOne({ email }); 
         if (learner) {
             return res.status(400).json({ error: 'User already exists' });
-        }
+        } 
         const securePassword = await bcrypt.hash(password, 5);
         const newLearner = new Learner({ name: name, email: email, password: securePassword });
         await newLearner.save();
