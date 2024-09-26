@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel } from '@mui/material';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const nameRef = useRef();
     const emailRef = useRef();
     const passwordRef = useRef();
+    const navigate = useNavigate();
 
     const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -34,6 +36,10 @@ const Register = () => {
         }
 
         // Registration logic here...
+
+
+        // upon successful registration navigate to login page
+        navigate('/login'); 
 
         setSnackbarMessage('Registration Successful');
         setSnackbarSeverity('success');
@@ -131,8 +137,8 @@ const Register = () => {
                         sx={{
                             marginTop: '10px',
                             '.MuiFormControlLabel-label': {
-                                fontSize: '0.875rem', // Smaller font size
-                                color: '#757575', // Grey color
+                                fontSize: '0.875rem',
+                                color: '#757575',
                             },
                         }}
                     />
@@ -173,10 +179,10 @@ const Register = () => {
             >
                 <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{
                     width: '100%',
-                    backgroundColor: snackbarSeverity === 'error' ? '#f42424' : '#4caf50', // Red for error, green for success
-                    color: 'white', // White text for both
+                    backgroundColor: snackbarSeverity === 'error' ? '#f42424' : '#4caf50',
+                    color: 'white', 
                     '& .MuiAlert-icon': {
-                        color: 'white', // White icon color
+                        color: 'white',
                     },
                 }}>
                     {snackbarMessage}
