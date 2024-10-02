@@ -2,13 +2,14 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconBut
 import React, { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 
-export const AddSubjectModal = ({ open, closeModal }) => {
+const AddSubjectModal = ({ open, closeModal }) => {
 
     const [subjectName, setSubjectName] = useState('');
     const [description, setDescription] = useState('');
+    
 
     const handleAddSubject = () => {
-        // handle
+        // add subjects
         closeModal();
     };
 
@@ -66,7 +67,7 @@ export const AddSubjectModal = ({ open, closeModal }) => {
                             </Button>
                         </Box>
                     </Box>
-                </DialogActions>
+                </DialogActions>    
             </Dialog>
         </>
     )

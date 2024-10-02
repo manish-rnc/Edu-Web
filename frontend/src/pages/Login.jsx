@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel } from '@mui/material';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
+import UserContext from '../context/UserContext';
 
 const Login = () => {
     const emailRef = useRef();
@@ -10,6 +11,8 @@ const Login = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+    const {setUser} = useContext(UserContext);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -37,6 +40,9 @@ const Login = () => {
 
         // navigate depending on pathname
         
+        // make api call if success - display name
+        setUser(email);
+
     };
 
     const handleCloseSnackbar = () => {
