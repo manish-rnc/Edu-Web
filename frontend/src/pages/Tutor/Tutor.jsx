@@ -17,7 +17,11 @@ const Tutor = () => {
     navigate('/tutor/subjects');
   };
 
-  return (
+  const handleAllStudents = () => {
+    navigate('/tutor/students');
+  };
+
+  return (  
     <>
       <Box sx={{ margin: '30px' }}>
         <Box>
@@ -85,6 +89,36 @@ const Tutor = () => {
               }}
             >
               View All Subjects
+            </Typography>
+          </Button>
+        </Box>
+        <Box>
+          <Typography sx={{ fontWeight: '600', color: 'grey', marginY: '10px' }}>
+            Check All Students Request ?
+          </Typography>
+          <Button
+            onClick={handleAllStudents}
+            sx={{
+              backgroundColor: '#0096FF',
+              color: 'white',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: '#1F51FF',
+                boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.3)',
+              },
+            }}
+          >
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              View All Students
             </Typography>
           </Button>
         </Box>
