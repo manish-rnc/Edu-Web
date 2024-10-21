@@ -1,7 +1,7 @@
 import { Avatar, Box, IconButton, Tooltip, Typography, Menu, MenuItem } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserContext from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
 
 const Header = () => {
 

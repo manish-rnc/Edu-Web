@@ -12,7 +12,7 @@ import Register from './pages/Register';
 import Header from './components/Header';
 import AllSubjects from './pages/Tutor/AllSubjects';
 import StudentList from './pages/Tutor/StudentList';
-import UserContextProvider from './context/UserContextProvider';
+import UserContextProvider from './context/UserContext';
 
 function App() {
 

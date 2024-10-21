@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel } from '@mui/material';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
-import UserContext from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
 
 const Login = () => {
     const emailRef = useRef();
