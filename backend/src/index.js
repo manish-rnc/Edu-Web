@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('../src/config/db.config');
 const authRouter = require('./routes/auth.route');
+const tutorRouter = require('./routes/tutor.route');
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/api', authRouter);
-// app.use('/api', tutorRouter);
+app.use('/api', tutorRouter);
 // app.use('/api', learnerRouter);
 
 connectDB();

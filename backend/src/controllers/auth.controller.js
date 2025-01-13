@@ -55,7 +55,7 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, age, profilePicture } = req.body;
+        const { name, email, password, age, userType, profilePicture } = req.body;
 
         // client side data validation
         if (!name || !email || !password || !age) {
@@ -85,6 +85,7 @@ exports.register = async (req, res) => {
             email,
             password: hashedPassword,
             age,
+            userType,
             profilePicture,
         });
         newUser.save();

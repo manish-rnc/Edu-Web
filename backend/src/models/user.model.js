@@ -18,6 +18,12 @@ const userSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    userType: {
+        type: String,
+        enum: ['tutor', 'learner'],
+        required: true,
+        default: 'learner',
+    },
     profilePicture: {
         type: String,
     },
