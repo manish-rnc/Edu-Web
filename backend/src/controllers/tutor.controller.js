@@ -122,7 +122,7 @@ exports.deleteSubject = async (req, res) => {
             code: "200",
             message: "Deleted Successfully",
         });
-    }
+    } 
     catch (error) {
         return res.status(500).send({
             code: "500",
