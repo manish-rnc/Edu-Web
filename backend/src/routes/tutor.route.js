@@ -4,7 +4,7 @@ const verifyToken = require('../middlewares/auth.middleware');
 
 const tutorRouter = express.Router();
 
-// subjects router
+// subjects routes
 tutorRouter.get('/tutor/subject/get', verifyToken, tutor.getAllSubjects);
 tutorRouter.post('/tutor/subject/add', verifyToken, tutor.addSubject);
 tutorRouter.post('/tutor/subject/edit', tutor.editSubject);
