@@ -1,99 +1,132 @@
-import Tutor from "../models/tutor.model.js";
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import Subject from "../models/subject.model.js";
+const Subject = require('../models/subject.model');
+const User = require('../models/user.model');
 
-export const register = async (req, res) => {
-    const { name, email, password, qualification } = req.body;
+exports.getAllSubjects = async (req, res) => {
     try {
-        const tutor = await Tutor.findOne({ email });
-        if (tutor) {
-            return res.status(400).json({ error: 'User already exists' });
-        }
-        const securePassword = await bcrypt.hash(password, 5);
-        const newTutor = new Tutor({ name: name, email: email, password: securePassword, qualification: qualification });
-        await newTutor.save();
-        res.status(201).json({ message: 'Successfully registered' });
+        const userId = req.user;
+        const subjects = await Subject.find({
+            tutorId: userId,
+        });
+
+        // can add pagination later - limit, skip
+
+        return res.status(200).send({
+            code: 200,
+            message: "Successful",
+            data: subjects,
+        });
     }
     catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).send({
+            code: "500",
+            message: "Internal Server Error",
+            error: error,
+        });
     }
 };
 
-export const login = async (req, res) => {
-    const { email, password } = req.body;
+exports.addSubject = async (req, res) => {
     try {
-        const tutor = await Tutor.findOne({ email });
-        if (!tutor) {
-            return res.status(400).json({ error: 'User does not exists' });
+        const { subjectName, subjectDescription } = req.body;
+        const userId = req.user;
+
+        // client side data validation
+        if (!subjectName) {
+            return res.status(400).send({
+                code: "400",
+                message: "Incomplete Details",
+            });
         }
-        const passwordMatch = await bcrypt.compare(password, tutor.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid Credentials' });
+
+        // only userType = 'tutor' can add subject - can be made as a middleware also in cases where only tutor is allowed to perform the operation
+        const user = await User.findOne({
+            _id: userId,
+        });
+        if (user.userType != 'tutor') {
+            return res.status(400).send({
+                code: 400,
+                message: "Not authorized to add subject",
+            });
         }
-        const token = jwt.sign({ tutorId: tutor._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
-        res.status(200).json({ message: "Login successful", token });
+
+        // check if same subject exists for the same user
+        const existingSubject = await Subject.findOne({
+            name: subjectName,
+            tutorId: userId,
+        });
+        if (existingSubject) {
+            return res.status(400).send({
+                code: "400",
+                message: "Subject is already added",
+            });
+        }
+
+        // create and add new subject
+        const newSubject = await Subject.create({
+            name: subjectName,
+            description: subjectDescription,
+            tutorId: userId,
+        });
+        newSubject.save();
+
+        return res.status(201).send({
+            code: "201",
+            message: "Subject added successfully",
+        });
     }
     catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).send({
+            code: "500",
+            message: "Internal Server Error",
+            error: error,
+        });
     }
 };
 
-export const addSubject = async (req, res) => {
-    const { subjectName, description, tutorId } = req.body;
-    console.log(req.user);
-    try {   
-        const subject = await Subject.findOne({ tutor: tutorId, name: subjectName });
-        if(subject) {
-            return res.status(400).json({ error: 'This Subject already exists' });
-        }
-        const newSubject = new Subject({ name: subjectName, description: description, tutor: tutorId });
-        await newSubject.save();
-        return res.status(200).json({ message: "Subject added successfully" });
-    }   
-    catch(error) {
-        res.status(500).json({ error: error.message });
-    }
+exports.editSubject = async (req, res) => {
+
 };
 
-export const getAllSubjects = async (req, res) => {
-    const tutorId = req.tutor;
+exports.deleteSubject = async (req, res) => {
     try {
-        const subjects = await Subject.find({ tutor: tutorId });
-        return res.status(200).json(subjects);
-    }
-    catch(error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+        const userId = req.user;
+        const { subjectId } = req.body;
 
-export const updateSubject = async (req, res) => {
-    const { id } = req.params;
-    const { subjectName, description, tutorId } = req.body;
-    try {
-        const subject = await Subject.findOneAndUpdate({_id: id, tutor: tutorId}, { name: subjectName, description: description, tutor: tutorId }, { new: true });
-        if(!subject) {
-            return res.status(404).json({ error: 'Subject does not exist !' });
+        // check if subject id is provided
+        if (!subjectId) {
+            return res.status(400).send({
+                code: '400',
+                message: 'Unable to delete subject',
+            })
         }
-        return res.status(200).json(subject);
-    }
-    catch(error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
-export const deleteSubject = async (req, res) => {
-    const { id } = req.params;
-    const { tutorId } = req.body;
-    try {
-        const subject = await Subject.findOneAndDelete({_id: id, tutor: tutorId});
-        if(!subject) {
-            return res.status(404).json({ error: 'Subject does not exist !' });
+        // check if subject exists or not
+        const subject = await Subject.findOne({
+            tutorId: userId,
+            _id: subjectId,
+        });
+        if (!subject) {
+            return res.status(404).send({
+                code: "400",
+                message: "Subject not found",
+            });
         }
-        return res.status(200).json({ message: 'Subject is deleted successfully' });
+
+        // delete the subject
+        await Subject.deleteOne({
+            tutorId: userId,
+            _id: subjectId,
+        });
+
+        return res.status(200).send({
+            code: "200",
+            message: "Deleted Successfully",
+        });
     }
-    catch(error) {
-        res.status(500).json({ error: error.message });
+    catch (error) {
+        return res.status(500).send({
+            code: "500",
+            message: "Internal Server Error",
+        })
     }
 };
-

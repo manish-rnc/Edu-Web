@@ -1,14 +1,13 @@
-import express from 'express';
-import { register, login, addSubject, getAllSubjects, updateSubject, deleteSubject } from '../controllers/tutor.controller.js';
-import isAuthenticated from '../middlewares/auth.middleware.js';
+const express = require('express');
+const tutor = require('../controllers/tutor.controller');
+const verifyToken = require('../middlewares/auth.middleware');
 
 const tutorRouter = express.Router();
 
-tutorRouter.post('/register', register);
-tutorRouter.post('/login', login);
-tutorRouter.post('/addSubject', isAuthenticated, addSubject);
-tutorRouter.get('/subjects', isAuthenticated, getAllSubjects);
-tutorRouter.put('/updateSubject/:id', isAuthenticated, updateSubject);
-tutorRouter.delete('/deleteSubject/:id', isAuthenticated, deleteSubject);
+// subjects router
+tutorRouter.get('/tutor/subject/get', verifyToken, tutor.getAllSubjects);
+tutorRouter.post('/tutor/subject/add', verifyToken, tutor.addSubject);
+tutorRouter.post('/tutor/subject/edit', tutor.editSubject);
+tutorRouter.post('/tutor/subject/delete', verifyToken, tutor.deleteSubject);
 
-export default tutorRouter;
+module.exports = tutorRouter;
