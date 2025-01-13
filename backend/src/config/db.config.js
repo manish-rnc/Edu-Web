@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
     const DB_URL = process.env.DB_URL
     const DB_NAME = process.env.DB_NAME
-    const connectionString = `${DB_URL}${DB_NAME}`;
-    try {
+    // const connectionString = `${DB_URL}${DB_NAME}`;
+    const connectionString = "mongodb://localhost:27017/edu_db";
+    try { 
         await mongoose.connect(connectionString);
         console.log('Database connected successfully');
     }   
@@ -13,4 +14,4 @@ const connectDB = async () => {
     }
 }
 
-export default connectDB;
+module.exports = connectDB;
