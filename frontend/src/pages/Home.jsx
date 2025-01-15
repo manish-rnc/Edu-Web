@@ -1,45 +1,67 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormControl, RadioGroup, Radio, Typography } from '@mui/material';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const nameRef = useRef();
-  const emailRef = useRef();
-  const passwordRef = useRef();
-  const userTypeRef = useRef('learner');
   const [authType, setAuthType] = useState('login');
-  const navigate = useNavigate();
-
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [userType, setUserType] = useState('learner');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const navigate = useNavigate();
 
-  const handleAuth = () => {
-    if (authType == 'register') {
-      const name = nameRef.current.value;
-      const email = emailRef.current.value;
-      const password = passwordRef.current.value;
+  const resetFields = () => {
+    setEmail('');
+    setPassword('');
+    setName('');
+    setUserType('learner');
+  };
 
+  const handleAuth = (e) => {
+    e.preventDefault(); // Prevent the form from submitting if any validation fails
+
+    if (authType === 'register') {
+      // Validation checks for registration form
       if (!name || !email || !password) {
         setSnackbarMessage('All fields are required');
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
-        return;
+        return; // Stop further execution if any field is empty
       }
 
       if (!agreeToTerms) {
         setSnackbarMessage('You must agree to the terms and conditions');
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
-        return;
+        return; // Stop further execution if terms are not agreed
       }
+
+      setSnackbarMessage('Registration successful! Please login.');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+
+      // only reset password and allow user to continue
+      setPassword('');
       setAuthType('login');
-    }
-    else if (authType == 'login') {
-      // let login
-      navigate('/tutor');
+    } else if (authType === 'login') {
+      // Validation checks for login form
+      if (!email || !password) {
+        setSnackbarMessage('All fields are required!');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        return; // Stop further execution if email or password is missing
+      }
+
+      setSnackbarMessage('Login successful!');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+
+      navigate('/tutor'); // Navigate to the tutor page on successful login
     }
   };
 
@@ -75,7 +97,6 @@ const Home = () => {
               sx={{
                 width: '450px',
                 padding: '30px',
-                // backgroundColor: 'white',
                 boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
                 borderRadius: '15px',
                 display: 'flex',
@@ -83,131 +104,124 @@ const Home = () => {
                 alignItems: 'center',
               }}
             >
-              <form
-                onSubmit={handleAuth}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
+              {authType === 'register' && <TextField
+                id="name"
+                label="Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                type="text"
+                placeholder="Enter your name"
+                size="small"
+                sx={{
+                  borderRadius: '8px',
                 }}
-              >
-                {authType == 'register' && <TextField
-                  id="name"
-                  label="Name"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  inputRef={nameRef}
-                  type="text"
-                  placeholder="Enter your name"
-                  size="small"
-                  sx={{
-                    borderRadius: '8px',
-                  }}
-                />}
-                <TextField
-                  id="email"
-                  label="Email"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  inputRef={emailRef}
-                  type="email"
-                  placeholder="Enter your email"
-                  size="small"
-                  sx={{
-                    borderRadius: '8px',
-                  }}
-                />
-                <TextField
-                  id="password"
-                  label="Password"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  inputRef={passwordRef}
-                  type="password"
-                  placeholder="Enter your password"
-                  size="small"
-                  sx={{
-                    borderRadius: '8px',
-                  }}
-                />
+              />}
+              <TextField
+                id="email"
+                label="Email"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Enter your email"
+                size="small"
+                sx={{
+                  borderRadius: '8px',
+                }}
+              />
+              <TextField
+                id="password"
+                label="Password"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                placeholder="Enter your password"
+                size="small"
+                sx={{
+                  borderRadius: '8px',
+                }}
+              />
 
-                {/* Radio button for user type */}
-                {authType == 'register' && <FormControl>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    name="row-radio-buttons-group"
-                    size="small"
-                    sx={{
-                      '& .MuiFormControlLabel-root': {
-                        marginRight: '20px', // Add spacing between options
-                      },
-                      '& .MuiRadio-root': {
-                        color: '#757575', // Set default color for radio buttons
-                        '&.Mui-checked': {
-                          color: '#1976d2', // Color for checked state
-                        },
-                      },
-                      '& .MuiTypography-root': {
-                        fontSize: '14px', // Set label font size
-                        color: '#424242', // Set label color
-                      },
-                    }}
-                  >
-                    <FormControlLabel value="tutor" control={<Radio />} label="Tutor" />
-                    <FormControlLabel value="learner" control={<Radio />} label="Learner" />
-                  </RadioGroup>
-                </FormControl>
-                }
-
-                {/* Checkbox for terms and conditions with smaller and grey text */}
-                {authType == 'register' && <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={agreeToTerms}
-                      onChange={(e) => setAgreeToTerms(e.target.checked)}
-                      color="primary"
-                    />
-                  }
-                  label="I agree to Edu's Terms of Service and Privacy Policy."
+              {/* Radio button for user type */}
+              {authType === 'register' && <FormControl>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  size="small"
                   sx={{
-                    marginTop: '6px',
-                    '.MuiFormControlLabel-label': {
-                      fontSize: '0.875rem',
-                      color: '#757575',
+                    '& .MuiFormControlLabel-root': {
+                      marginRight: '20px', // Add spacing between options
+                    },
+                    '& .MuiRadio-root': {
+                      color: '#757575', // Set default color for radio buttons
+                      '&.Mui-checked': {
+                        color: '#1976d2', // Color for checked state
+                      },
+                    },
+                    '& .MuiTypography-root': {
+                      fontSize: '14px', // Set label font size
+                      color: '#424242', // Set label color
                     },
                   }}
-                />}
-
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    marginTop: '16px',
-                    padding: '9px',
-                    fontSize: '15px',
-                    fontWeight: 'bold',
-                    borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #42a5f5, #1976d2)',
-                    color: 'white',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
-                    },
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  type="submit"
                 >
-                  <LoginOutlinedIcon sx={{ marginRight: '12px' }} />
-                  {authType}
-                </Button>
+                  <FormControlLabel value="tutor" control={<Radio />} label="Tutor" />
+                  <FormControlLabel value="learner" control={<Radio />} label="Learner" />
+                </RadioGroup>
+              </FormControl>}
 
-              </form>
+              {/* Checkbox for terms and conditions with smaller and grey text */}
+              {authType === 'register' && <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={agreeToTerms}
+                    onChange={(e) => setAgreeToTerms(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="I agree to Edu's Terms of Service and Privacy Policy."
+                sx={{
+                  marginTop: '6px',
+                  '.MuiFormControlLabel-label': {
+                    fontSize: '0.875rem',
+                    color: '#757575',
+                  },
+                }}
+              />}
+
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                sx={{
+                  marginTop: '16px',
+                  padding: '9px',
+                  fontSize: '15px',
+                  fontWeight: 'bold',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #42a5f5, #1976d2)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+                  },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                onClick={handleAuth}
+              >
+                <LoginOutlinedIcon sx={{ marginRight: '12px' }} />
+                {authType === 'login' ? 'Login' : 'Register'}
+              </Button>
+
               {authType === 'login' && (
                 <Typography
                   sx={{
@@ -216,25 +230,9 @@ const Home = () => {
                     color: '#757575',
                   }}
                 >
-
-                  {/* <span
-                    onClick={() => setAuthType('forgotPassword')}
-                    style={{
-                      color: '#1976d2',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      alignContent: 'center'
-                    }}
-                    onMouseEnter={(e) => (e.target.style.textDecoration = 'underline')}
-                    onMouseLeave={(e) => (e.target.style.textDecoration = 'none')}
-                  >
-                    Forgot Password ?
-                  </span>
-                  <br /> */}
-
                   Don't have an account?{' '}
                   <span
-                    onClick={() => setAuthType('register')}
+                    onClick={() => { resetFields(), setAuthType('register') }}
                     style={{
                       color: '#1976d2',
                       cursor: 'pointer',
@@ -248,16 +246,16 @@ const Home = () => {
                 </Typography>
               )}
 
-              {authType == 'register' && <Typography
+              {authType === 'register' && <Typography
                 sx={{
                   marginTop: '14px',
                   fontSize: '15px',
                   color: '#757575',
                 }}
               >
-                Already registered ?{' '}
+                Already registered?{' '}
                 <span
-                  onClick={() => setAuthType('login')}
+                  onClick={() => { resetFields(), setAuthType('login') }}
                   style={{
                     color: '#1976d2',
                     cursor: 'pointer',
@@ -275,17 +273,24 @@ const Home = () => {
             <Snackbar
               open={openSnackbar}
               autoHideDuration={4000}
-              onClose={() => setOpenSnackbar(false)}
+              onClose={() => {
+                setOpenSnackbar(false);
+                setSnackbarMessage(''); // Clear message after closing
+              }}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-              <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{
-                width: '100%',
-                backgroundColor: snackbarSeverity === 'error' ? '#f42424' : '#4caf50',
-                color: 'white',
-                '& .MuiAlert-icon': {
+              <Alert
+                onClose={() => setOpenSnackbar(false)}
+                severity={snackbarSeverity}
+                sx={{
+                  width: '100%',
+                  backgroundColor: snackbarSeverity === 'error' ? '#f42424' : '#4caf50',
                   color: 'white',
-                },
-              }}>
+                  '& .MuiAlert-icon': {
+                    color: 'white',
+                  },
+                }}
+              >
                 {snackbarMessage}
               </Alert>
             </Snackbar>
@@ -293,7 +298,7 @@ const Home = () => {
         </Box>
       </Box>
     </>
-  )
-}
+  );
+};
 
 export default Home;
