@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormControl, RadioGroup, Radio, Typography } from '@mui/material';
+import { Box, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormControl, RadioGroup, Radio, Typography, InputAdornment, IconButton } from '@mui/material';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import { useNavigate } from 'react-router-dom';
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import PersonIcon from '@mui/icons-material/Person';
+import Logo from '../assests/final_logo.png';
 
 const Home = () => {
   const [authType, setAuthType] = useState('login');
@@ -9,17 +15,18 @@ const Home = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [userType, setUserType] = useState('learner');
+  const [userType, setUserType] = useState('tutor');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [toggleVisibilty, setToggleVisibilty] = useState(true);
   const navigate = useNavigate();
 
   const resetFields = () => {
     setEmail('');
     setPassword('');
     setName('');
-    setUserType('learner');
+    setUserType('tutor');
   };
 
   const handleAuth = (e) => {
@@ -61,7 +68,13 @@ const Home = () => {
       setSnackbarSeverity('success');
       setOpenSnackbar(true);
 
-      navigate('/tutor'); // Navigate to the tutor page on successful login
+      // get userType from DB
+      if (userType == 'tutor') {
+        navigate('/tutor'); // Navigate to the tutor page on successful login
+      }
+      else if (userType == 'learner') {
+        navigate('/learner');
+      }
     }
   };
 
@@ -73,15 +86,15 @@ const Home = () => {
       }}>
         <Box sx={{
           backgroundColor: '#146cf1',
-          width: '50vw',
+          width: '49vw',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-          Logo
+          <img src={Logo} width="350" />
         </Box>
         <Box sx={{
-          width: '50vw',
+          width: '51vw',
         }}>
           <Box
             sx={{
@@ -118,6 +131,13 @@ const Home = () => {
                 sx={{
                   borderRadius: '8px',
                 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <PersonIcon fontSize='small' />
+                    </InputAdornment>
+                  ),
+                }}
               />}
               <TextField
                 id="email"
@@ -133,6 +153,13 @@ const Home = () => {
                 sx={{
                   borderRadius: '8px',
                 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <MailOutlinedIcon fontSize='small' />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <TextField
                 id="password"
@@ -142,11 +169,31 @@ const Home = () => {
                 margin="normal"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                type="password"
+                type={toggleVisibilty ? "password" : "text"}
                 placeholder="Enter your password"
                 size="small"
                 sx={{
                   borderRadius: '8px',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <LockOutlinedIcon fontSize='small' />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment
+                      position='end'
+                      sx={{
+                        cursor: 'pointer',
+                      }}>
+                      <IconButton
+                        // onClick={setToggleVisibilty((prevVisibility) => !prevVisibility)}
+                      >
+                        {toggleVisibilty ? <VisibilityOffIcon fontSize='small' /> : <VisibilityIcon fontSize='small' />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
 
@@ -203,7 +250,7 @@ const Home = () => {
                 fullWidth
                 sx={{
                   marginTop: '16px',
-                  padding: '9px',
+                  padding: '7px',
                   fontSize: '15px',
                   fontWeight: 'bold',
                   borderRadius: '10px',

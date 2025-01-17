@@ -22,7 +22,7 @@ const Header = () => {
 
   const handleLogout = () => {
     // clear local storage
-    navigate('/login');
+    navigate('/');
   };
 
   return (
